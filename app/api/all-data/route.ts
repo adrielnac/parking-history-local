@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAllParkingData } from '@/lib/dynamodb';
+import { getAllParkingData } from '@/lib/sqlite';
 
 export async function GET() {
   try {

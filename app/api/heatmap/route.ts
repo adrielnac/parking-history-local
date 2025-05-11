@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAllParkingData, ParkingEntry } from '@/lib/dynamodb';
+import { getAllParkingData, ParkingEntry } from '@/lib/sqlite';
 import { ParkingLotsData } from '@/lib/heatmap';
 import { toZonedTime } from 'date-fns-tz';
 

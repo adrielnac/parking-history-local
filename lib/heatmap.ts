@@ -1,4 +1,4 @@
-import { ParkingEntry } from './dynamodb';
+import { ParkingEntry } from './sqlite';
 
 export type HeatmapData = {
   day: number;
@@ -15,4 +15,4 @@ export type ParkingLotData = {
 
 export type ParkingLotsData = {
   [url: string]: ParkingLotData;
-}; 
+};
