@@ -1,32 +1,51 @@
-import os
 import json
 import uuid
 from datetime import datetime, timezone
-import boto3
-import requests
-from bs4 import BeautifulSoup
 
-# Initialize DynamoDB client outside the handler for connection reuse
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
+import requests
+from apscheduler.schedulers.blocking import BlockingScheduler
+from bs4 import BeautifulSoup
+from sqlmodel import Field, Session, SQLModel, create_engine
+
+# Initialize SQLite database
+DB_PATH = 'parking_data.db'
+engine = create_engine(f"sqlite:///{DB_PATH}")
+
+
+class ParkingData(SQLModel, table=True):
+    uuid: str = Field(primary_key=True)
+    timestamp: str
+    lot_name: str
+    is_full: bool
+    url: str
+    image_src: str
+
+
+def initialize_db():
+    """
+    Create the SQLite database and table if they don't exist.
+    """
+    SQLModel.metadata.create_all(engine)
+
 
 # Constants
-TARGET_URLS = [
-    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=123"
-]
+TARGET_URLS = ["https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=123"]
 REQUEST_TIMEOUT = 5  # seconds
 
-def put_parking_data(data):
+
+def put_parking_data(data: ParkingData):
     """
-    Store parking data in DynamoDB
+    Store parking data in SQLite database.
     """
     try:
-        table.put_item(Item=data)
+        with Session(engine) as session:
+            session.add(data)
+            session.commit()
     except Exception as e:
-        print(f"Error putting item in DynamoDB: {str(e)}")
-        raise
+        print(f"Error putting item in SQLite: {str(e)}")
 
-def lambda_handler(event, context):
+
+def query_lots():
     """
     AWS Lambda handler function
     """
@@ -36,9 +55,9 @@ def lambda_handler(event, context):
             # Add timeout to request
             response = requests.get(url, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
-            
+
             # Parse HTML
-            soup = BeautifulSoup(response.text)
+            soup = BeautifulSoup(response.text, features="html.parser")
 
             # Extract parking data - optimize selectors
             img_tag = soup.select_one(".ParkingDetailsTable td img")
@@ -47,35 +66,64 @@ def lambda_handler(event, context):
             lot_name = soup.select_one(".ParkingTableHeader").text.strip()
 
             # Prepare data entry
-            data = {
-                'uuid': str(uuid.uuid4()),
-                'timestamp': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
-                'lot_name': lot_name,
-                'is_full': is_full,
-                'url': url,
-                'image_src': img_src,
-            }
-
+            data = ParkingData(
+                uuid=str(uuid.uuid4()),
+                timestamp=datetime.now(timezone.utc).isoformat().replace(
+                    '+00:00', 'Z'),
+                lot_name=lot_name,
+                is_full=is_full,
+                url=url,
+                image_src=img_src,
+            )
             # Append data to the list
-            all_data.append(data)
+            all_data.append(data.model_dump_json())
 
-            # Store in DynamoDB
+            # Store in SQLite
             put_parking_data(data)
 
         return {
-            'statusCode': 200,
-            'body': json.dumps({'success': True, 'message': 'Query completed successfully', 'data': all_data})
+            'statusCode':
+            200,
+            'body':
+            json.dumps({
+                'success': True,
+                'message': 'Query completed successfully',
+                'data': all_data
+            })
         }
 
     except requests.Timeout:
         print("Request timed out while fetching parking data")
         return {
             'statusCode': 504,
-            'body': json.dumps({'success': False, 'error': 'Request timed out'})
+            'body': json.dumps({
+                'success': False,
+                'error': 'Request timed out'
+            })
         }
     except Exception as e:
         print(f"Error processing parking data: {str(e)}")
         return {
             'statusCode': 500,
-            'body': json.dumps({'success': False, 'error': str(e)})
+            'body': json.dumps({
+                'success': False,
+                'error': str(e)
+            })
         }
+
+
+if __name__ == "__main__":
+    # Initialize the database
+    initialize_db()
+
+    query_lots()
+    # Schedule the lambda_handler function every 10 minutes
+    scheduler = BlockingScheduler()
+    scheduler.add_job(query_lots, 'interval', minutes=10)
+
+    try:
+        print("Scheduler started. Running lambda_handler every 10 minutes.")
+        scheduler.start()
+    except (KeyboardInterrupt, SystemExit):
+        print("Scheduler stopped.")
+        scheduler.shutdown()

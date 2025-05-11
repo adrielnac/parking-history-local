@@ -62,3 +62,21 @@ aws events put-targets \
 - Monitor function execution in CloudWatch Logs
 - Set up CloudWatch Alarms for errors
 - Use X-Ray for tracing (optional)
+
+# Local Setup
+
+This script can now be run locally without AWS. It uses SQLite for data storage and runs every 10 minutes.
+
+## Running Locally
+
+1. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+2. Run the script:
+```bash
+python query_parking.py
+```
+
+The script will scrape parking data and store it in a local SQLite database (`parking_data.db`).
