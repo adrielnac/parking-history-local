@@ -29,7 +29,16 @@ def initialize_db():
 
 
 # Constants
-TARGET_URLS = ["https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=123"]
+TARGET_URLS = [
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=123",
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=3",
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=122",
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=45",
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=94",
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=10",
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=4",
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=42"
+]
 REQUEST_TIMEOUT = 5  # seconds
 
 
