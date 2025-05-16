@@ -32,7 +32,7 @@ export async function putParkingData(data: ParkingEntry): Promise<void> {
 export async function getAllParkingData(): Promise<ParkingEntry[]> {
   return new Promise((resolve, reject) => {
     const db = new sqlite3.Database(DB_PATH);
-    db.all('SELECT * FROM parkingdata ORDER BY timestamp DESC', (err, rows: any[]) => {
+    db.all('SELECT * FROM parkingdata ORDER BY timestamp DESC', (err: Error | null, rows: { uuid: string; timestamp: string; lot_name: string; is_full: number; url: string; image_src: string; }[]) => {
       db.close();
       if (err) {
         reject(err);
