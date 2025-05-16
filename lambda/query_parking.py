@@ -1,4 +1,3 @@
-import json
 import uuid
 from datetime import datetime, timezone
 
@@ -37,7 +36,8 @@ TARGET_URLS = [
     "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=94",
     "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=10",
     "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=4",
-    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=42"
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=42",
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=131"
 ]
 REQUEST_TIMEOUT = 5  # seconds
 
@@ -59,8 +59,8 @@ def query_lots():
     AWS Lambda handler function
     """
     all_data = []
-    try:
-        for url in TARGET_URLS:
+    for url in TARGET_URLS:
+        try:
             # Add timeout to request
             response = requests.get(url, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
@@ -89,36 +89,10 @@ def query_lots():
 
             # Store in SQLite
             put_parking_data(data)
-
-        return {
-            'statusCode':
-            200,
-            'body':
-            json.dumps({
-                'success': True,
-                'message': 'Query completed successfully',
-                'data': all_data
-            })
-        }
-
-    except requests.Timeout:
-        print("Request timed out while fetching parking data")
-        return {
-            'statusCode': 504,
-            'body': json.dumps({
-                'success': False,
-                'error': 'Request timed out'
-            })
-        }
-    except Exception as e:
-        print(f"Error processing parking data: {str(e)}")
-        return {
-            'statusCode': 500,
-            'body': json.dumps({
-                'success': False,
-                'error': str(e)
-            })
-        }
+        except requests.RequestException as e:
+            print(f"Error fetching URL {url}: {str(e)}")
+        except Exception as e:
+            print(f"Error processing URL {url}: {str(e)}")
 
 
 if __name__ == "__main__":
