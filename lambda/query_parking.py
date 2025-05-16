@@ -37,7 +37,10 @@ TARGET_URLS = [
     "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=10",
     "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=4",
     "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=42",
-    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=131"
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=131",
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=74",
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=57",
+    "https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=114"
 ]
 REQUEST_TIMEOUT = 5  # seconds
 
