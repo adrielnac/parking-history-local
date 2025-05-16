@@ -1,0 +1,15 @@
+# Exclude SQLite DB (shared via volume anyway)
+*.db
+
+# Exclude local dependencies — Docker will reinstall with `npm install`
+node_modules/
+.next/
+
+#Exlude docker related files
+docker*
+Docker*
+
+# Optional extras
+.git/
+*.log
+.DS_Store

@@ -1,6 +1,6 @@
 import sqlite3 from 'sqlite3';
 
-const DB_PATH = 'parking_data.db';
+const DB_PATH = 'data/parking_data.db';
 
 export type ParkingEntry = {
   uuid: string;

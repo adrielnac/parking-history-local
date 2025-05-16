@@ -1,0 +1,8 @@
+# Exclude Python cache
+__pycache__/
+*.pyc
+
+# Optional: ignore VCS and editor files
+.git/
+*.log
+.DS_Store

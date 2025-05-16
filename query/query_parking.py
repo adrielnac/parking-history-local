@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from sqlmodel import Field, Session, SQLModel, create_engine
 
 # Initialize SQLite database
-DB_PATH = 'parking_data.db'
+DB_PATH = 'data/parking_data.db'
 engine = create_engine(f"sqlite:///{DB_PATH}")
 
 
