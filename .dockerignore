@@ -8,6 +8,9 @@ node_modules/
 #Exlude docker related files
 docker*
 Docker*
+Dockerfile
+Dockerfile.pi
+docker-compose*.yml
 
 # Optional extras
 .git/

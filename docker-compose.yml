@@ -3,8 +3,7 @@ services:
     build: ./query
     volumes:
       - shared-db:/app/data
-    depends_on:
-      - parking-ui
+    restart: unless-stopped
 
   parking-ui:
     build: .
@@ -12,6 +11,7 @@ services:
       - "3000:3000"
     volumes:
       - shared-db:/app/data
+    restart: unless-stopped
 
 volumes:
   shared-db:
