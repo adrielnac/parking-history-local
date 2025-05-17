@@ -1,0 +1,4 @@
+services:
+  parking-ui:
+    build:
+      dockerfile: Dockerfile.pi

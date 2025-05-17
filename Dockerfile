@@ -12,10 +12,10 @@ FROM node:24-slim
 
 WORKDIR /app
 RUN mkdir /data
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/.next .next
-RUN npm install --omit=dev
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
 
 
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]

@@ -1,0 +1,31 @@
+# Stage 1: Build
+FROM arm32v7/node:20-slim AS builder
+
+WORKDIR /app
+COPY package*.json ./
+
+# Install system build prerequisites for sqlite3 native add-on
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3 \
+        make \
+        g++ \
+        python-is-python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Stage 2: Run
+FROM arm32v7/node:20-slim
+
+WORKDIR /app
+RUN mkdir /data
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+
+
+EXPOSE 3000
+CMD ["npm", "run", "start"]
